@@ -2,8 +2,8 @@ package co.edu.uniquindio.poo.model;
 
 public abstract class Equipo {
 
-    private String codigoUnico;
-    private String numSerie;
+    private final String codigoUnico;
+    private final String numSerie;
     private String marca;
     private String modelo;
     private String anioFab;
@@ -24,16 +24,8 @@ public abstract class Equipo {
         return codigoUnico;
     }
 
-    public void setCodigoUnico(String codigoUnico) {
-        this.codigoUnico = codigoUnico;
-    }
-
     public String getNumSerie() {
         return numSerie;
-    }
-
-    public void setNumSerie(String numSerie) {
-        this.numSerie = numSerie;
     }
 
     public String getMarca() {

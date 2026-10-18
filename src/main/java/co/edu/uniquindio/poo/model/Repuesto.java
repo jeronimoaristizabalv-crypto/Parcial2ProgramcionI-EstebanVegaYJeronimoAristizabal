@@ -2,7 +2,7 @@ package co.edu.uniquindio.poo.model;
 
 public class Repuesto {
 
-    private String codigoUnico;
+    private final String codigoUnico;
     private String nombre;
     private String descripcion;
     private double precioUnidad;
@@ -22,10 +22,6 @@ public class Repuesto {
 
     public String getCodigoUnico() {
         return codigoUnico;
-    }
-
-    public void setCodigoUnico(String codigoUnico) {
-        this.codigoUnico = codigoUnico;
     }
 
     public String getNombre() {

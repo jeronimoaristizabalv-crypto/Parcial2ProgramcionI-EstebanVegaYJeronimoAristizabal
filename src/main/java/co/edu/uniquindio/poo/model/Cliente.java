@@ -6,7 +6,7 @@ import java.util.Collections;
 public class Cliente {
 
     private String numeroTelefono;
-    private String numeroDocumento;
+    private final String numeroDocumento;
     private String nombreCompleto;
     private String correoElectronico;
     private String direccionResidencia;
@@ -32,10 +32,6 @@ public class Cliente {
 
     public String getNumeroDocumento() {
         return numeroDocumento;
-    }
-
-    public void setNumeroDocumento(String numeroDocumento) {
-        this.numeroDocumento = numeroDocumento;
     }
 
     public String getNombreCompleto() {
@@ -91,5 +87,7 @@ public class Cliente {
                 '}';
     }
 
-    // CRUDs
+    // CRUD Equipo
+
+
 }

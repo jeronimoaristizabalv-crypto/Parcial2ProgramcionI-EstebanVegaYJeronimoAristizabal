@@ -3,7 +3,7 @@ package co.edu.uniquindio.poo.model;
 public abstract class Servicio {
 
 
-    private String codigo;
+    private final String codigo;
     private String nombre;
     private String desccripcion;
     private final double  tarifaBase;
@@ -20,10 +20,6 @@ public abstract class Servicio {
 
     public String getCodigo() {
         return codigo;
-    }
-
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
     }
 
     public String getNombre() {
