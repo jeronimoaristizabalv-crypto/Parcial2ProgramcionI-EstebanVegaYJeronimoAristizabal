@@ -2,7 +2,7 @@ package co.edu.uniquindio.poo.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.List;
 
 public class DetalleServicio {
 
@@ -18,7 +18,7 @@ public class DetalleServicio {
 
     private OrdenServicio ownedByOrdenServicio;
 
-    public DetalleServicio(String codigoUnico, Equipo equipo, Servicio servicioAsociado, String descripcion, Tecnico tecnicoResp, int horasTrabajo, String observTecnicas, EstadoOrden estadoIntervencion, ArrayList<RepuestoUtilizado> listaRepuestosUtilizados) {
+    public DetalleServicio(String codigoUnico, Equipo equipo, Servicio servicioAsociado, String descripcion, Tecnico tecnicoResp, int horasTrabajo, String observTecnicas, EstadoOrden estadoIntervencion) {
         this.codigoUnico = codigoUnico;
         this.equipo = equipo;
         this.servicioAsociado = servicioAsociado;
@@ -27,7 +27,6 @@ public class DetalleServicio {
         this.horasTrabajo = horasTrabajo;
         this.observTecnicas = observTecnicas;
         this.estadoIntervencion = estadoIntervencion;
-        this.listaRepuestosUtilizados = listaRepuestosUtilizados;
     }
 
     public String getCodigoUnico() {
@@ -90,12 +89,8 @@ public class DetalleServicio {
         this.estadoIntervencion = estadoIntervencion;
     }
 
-    public ArrayList<RepuestoUtilizado> getListaRepuestosUtilizados() {
-        return (ArrayList<RepuestoUtilizado>) Collections.unmodifiableList(listaRepuestosUtilizados);
-    }
-
-    public void setListaRepuestosUtilizados(ArrayList<RepuestoUtilizado> listaRepuestosUtilizados) {
-        this.listaRepuestosUtilizados = listaRepuestosUtilizados;
+    public List<RepuestoUtilizado> getListaRepuestosUtilizados() {
+        return Collections.unmodifiableList(listaRepuestosUtilizados);
     }
 
     public OrdenServicio getOwnedByOrdenServicio() {
@@ -106,75 +101,33 @@ public class DetalleServicio {
         this.ownedByOrdenServicio = ownedByOrdenServicio;
     }
 
-    //CRUD RepuestoUtilizado
-
-    public String registrarRepuestoUtilizado(RepuestoUtilizado repuestoUtilizado) {
-
-        if (repuestoUtilizado.getCantidad() <= 0) {
-            return "La cantidad debe ser mayor a cero.";
-        }
-        Repuesto repuesto = repuestoUtilizado.getRepuestoUtilizado();
-        Optional<RepuestoUtilizado> repuestoAux = buscarRepuestoUtilizado(repuesto.getCodigoUnico());
-        if (repuestoAux.isPresent()) {
-            return "No se puede registrar, el repuesto " + repuesto.getCodigoUnico() + " ya está registrado en este detalle.";
-        }
-        if (repuestoUtilizado.getCantidad() > repuesto.getCantidadExistente()) {
-            return "Inventario insuficiente del repuesto " + repuesto.getCodigoUnico()
-                    + ": se solicitan " + repuestoUtilizado.getCantidad()
-                    + " y hay " + repuesto.getCantidadExistente() + " disponibles.";
-        }
-        repuesto.setCantidadExistente(repuesto.getCantidadExistente() - repuestoUtilizado.getCantidad());
+    void agregarRepuesto(RepuestoUtilizado repuestoUtilizado) {
+        repuestoUtilizado.setOwnedByDetalleServicio(this);
         listaRepuestosUtilizados.add(repuestoUtilizado);
-        return "El repuesto fue registrado exitosamente y se descontó del inventario.";
     }
 
-    public Optional<RepuestoUtilizado> buscarRepuestoUtilizado(String codigoRepuesto) {
-        for (RepuestoUtilizado repuestoAux : listaRepuestosUtilizados) {
-            if (codigoRepuesto.equals(repuestoAux.getRepuestoUtilizado().getCodigoUnico())) {
-                return Optional.of(repuestoAux);
-            }
+    void quitarRepuesto(RepuestoUtilizado repuestoUtilizado) {
+        listaRepuestosUtilizados.remove(repuestoUtilizado);
+    }
+
+    public double calcularCosto() {
+        double costoServicio;
+        if (servicioAsociado instanceof ReparacionCorrectiva) {
+            costoServicio = horasTrabajo * servicioAsociado.tarifaBase();
+        } else if (servicioAsociado instanceof MantenimientoPreventivo) {
+            MantenimientoPreventivo mantenimiento = (MantenimientoPreventivo) servicioAsociado;
+            costoServicio = mantenimiento.tarifaParaEquipo(equipo);
+        } else {
+            costoServicio = servicioAsociado.total();
         }
-        return Optional.empty();
+        return costoServicio + calcularCostoRepuestos();
     }
 
-    public ArrayList<RepuestoUtilizado> listarRepuestosUtilizados() {
-        return new ArrayList<>(listaRepuestosUtilizados);
-    }
-
-    public String actualizarRepuestoUtilizado(String codigoRepuesto, int cantidad, double precioUnidad) {
-        Optional<RepuestoUtilizado> repuestoAux = buscarRepuestoUtilizado(codigoRepuesto);
-        if (repuestoAux.isPresent()) {
-            if (cantidad <= 0) {
-                return "La cantidad debe ser mayor a cero.";
-            }
-            if (precioUnidad < 0) {
-                return "El precio por unidad no puede ser negativo.";
-            }
-            RepuestoUtilizado ru = repuestoAux.get();
-            Repuesto repuesto = ru.getRepuestoUtilizado();
-            int diferencia = cantidad - ru.getCantidad();   // positivo: se necesitan mas; negativo: se devuelven
-            if (diferencia > repuesto.getCantidadExistente()) {
-                return "Inventario insuficiente del repuesto " + codigoRepuesto
-                        + ": se necesitan " + diferencia + " unidades adicionales y hay "
-                        + repuesto.getCantidadExistente() + " disponibles.";
-            }
-            repuesto.setCantidadExistente(repuesto.getCantidadExistente() - diferencia);
-            ru.setCantidad(cantidad);
-            ru.setPrecioUnidad(precioUnidad);
-            return "Repuesto utilizado actualizado correctamente.";
+    public double calcularCostoRepuestos() {
+        double total = 0;
+        for (RepuestoUtilizado usado : listaRepuestosUtilizados) {
+            total = total + usado.calcularSubtotal();
         }
-        return "El repuesto " + codigoRepuesto + " no está registrado en este detalle.";
-    }
-
-    public String borrarRepuestoUtilizado(String codigoRepuesto) {
-        Optional<RepuestoUtilizado> repuestoAux = buscarRepuestoUtilizado(codigoRepuesto);
-        if (repuestoAux.isEmpty()) {
-            return "El repuesto no está registrado en este detalle.";
-        }
-        RepuestoUtilizado ru = repuestoAux.get();
-        Repuesto repuesto = ru.getRepuestoUtilizado();
-        repuesto.setCantidadExistente(repuesto.getCantidadExistente() + ru.getCantidad());
-        listaRepuestosUtilizados.remove(ru);
-        return "El repuesto fue borrado exitosamente. Se devolvieron " + ru.getCantidad() + " unidades al inventario.";
+        return total;
     }
 }

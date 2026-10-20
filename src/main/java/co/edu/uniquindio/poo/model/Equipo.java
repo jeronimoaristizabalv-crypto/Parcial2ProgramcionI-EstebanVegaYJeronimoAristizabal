@@ -4,10 +4,10 @@ public abstract class Equipo {
 
     private final String codigoUnico;
     private final String numSerie;
-    private String marca;
-    private String modelo;
-    private String anioFab;
-    private String descripcion;
+    private final String marca;
+    private final String modelo;
+    private final String anioFab;
+    private final String descripcion;
 
     private Cliente ownedByCliente;
 
@@ -32,32 +32,16 @@ public abstract class Equipo {
         return marca;
     }
 
-    public void setMarca(String marca) {
-        this.marca = marca;
-    }
-
     public String getModelo() {
         return modelo;
-    }
-
-    public void setModelo(String modelo) {
-        this.modelo = modelo;
     }
 
     public String getAnioFab() {
         return anioFab;
     }
 
-    public void setAnioFab(String anioFab) {
-        this.anioFab = anioFab;
-    }
-
     public String getDescripcion() {
         return descripcion;
-    }
-
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
     }
 
     public Cliente getOwnedByCliente() {
@@ -67,6 +51,4 @@ public abstract class Equipo {
     public void setOwnedByCliente(Cliente ownedByCliente) {
         this.ownedByCliente = ownedByCliente;
     }
-
-
 }

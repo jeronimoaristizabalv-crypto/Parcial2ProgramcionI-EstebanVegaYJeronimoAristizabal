@@ -81,7 +81,6 @@ public class Repuesto {
                 ", precioUnidad=" + precioUnidad +
                 ", cantidadExistente=" + cantidadExistente +
                 ", compatibilidad='" + compatibilidad + '\'' +
-                ", ownedByTechRepair=" + ownedByTechRepair +
                 '}';
     }
 }

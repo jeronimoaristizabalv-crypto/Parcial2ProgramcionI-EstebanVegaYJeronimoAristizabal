@@ -5,16 +5,14 @@ public abstract class Servicio {
 
     private final String codigo;
     private String nombre;
-    private String desccripcion;
-    private final double  tarifaBase;
+    private String descripcion;
 
     private TechRepair ownedByTechRepair;
 
-    public Servicio(String codigo, String nombre, String desccripcion, double tarifaBase, TechRepair ownedByTechRepair) {
+    public Servicio(String codigo, String nombre, String descripcion, TechRepair ownedByTechRepair) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.desccripcion = desccripcion;
-        this.tarifaBase = tarifaBase;
+        this.descripcion = descripcion;
         this.ownedByTechRepair = ownedByTechRepair;
     }
 
@@ -30,16 +28,12 @@ public abstract class Servicio {
         this.nombre = nombre;
     }
 
-    public String getDesccripcion() {
-        return desccripcion;
+    public String getDescripcion() {
+        return descripcion;
     }
 
-    public void setDesccripcion(String desccripcion) {
-        this.desccripcion = desccripcion;
-    }
-
-    public double getTarifaBase() {
-        return tarifaBase;
+    public void setDescripcion(String desccripcion) {
+        this.descripcion = desccripcion;
     }
 
     public TechRepair getOwnedByTechRepair() {
@@ -50,17 +44,9 @@ public abstract class Servicio {
         this.ownedByTechRepair = ownedByTechRepair;
     }
 
-    @Override
-    public String toString() {
-        return "EstadoOrden{" +
-                "codigo='" + codigo + '\'' +
-                ", nombre='" + nombre + '\'' +
-                ", desccripcion='" + desccripcion + '\'' +
-                ", tarifaBase=" + tarifaBase +
-                ", ownedByTechRepair=" + ownedByTechRepair +
-                '}';
-    }
+    public abstract double total();
 
+    public abstract double tarifaBase();
 
 }
 

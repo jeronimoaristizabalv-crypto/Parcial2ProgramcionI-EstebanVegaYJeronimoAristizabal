@@ -38,6 +38,10 @@ public class RepuestoUtilizado {
         this.precioUnidad = precioUnidad;
     }
 
+    public double calcularSubtotal() {
+        return cantidad * precioUnidad;
+    }
+
     public DetalleServicio getOwnedByDetalleServicio() {
         return ownedByDetalleServicio;
     }

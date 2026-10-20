@@ -2,6 +2,8 @@ package co.edu.uniquindio.poo.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 public class Cliente {
 
@@ -13,13 +15,13 @@ public class Cliente {
     private ArrayList<Equipo> listaEquipos= new ArrayList<>();
     private TechRepair ownedByTechRepair;
 
-    public Cliente(String numeroTelefono, String numeroDocumento, String nombreCompleto, String correoElectronico, String direccionResidencia, ArrayList<Equipo> listaEquipos) {
+    public Cliente(String numeroTelefono, String numeroDocumento, String nombreCompleto, String correoElectronico, String direccionResidencia) {
         this.numeroTelefono = numeroTelefono;
         this.numeroDocumento = numeroDocumento;
         this.nombreCompleto = nombreCompleto;
         this.correoElectronico = correoElectronico;
         this.direccionResidencia = direccionResidencia;
-        this.listaEquipos = listaEquipos;
+
     }
 
     public String getNumeroTelefono() {
@@ -58,12 +60,22 @@ public class Cliente {
         this.direccionResidencia = direccionResidencia;
     }
 
-    public ArrayList<Equipo> getListaEquipos() {
-        return (ArrayList<Equipo>) Collections.unmodifiableList(listaEquipos);
+    public List<Equipo> getListaEquipos() {
+        return Collections.unmodifiableList(listaEquipos);
     }
 
-    public void setListaEquipos(ArrayList<Equipo> listaEquipos) {
-        this.listaEquipos = listaEquipos;
+    public String actualizarEquipo(Equipo equipoAnterior, Equipo equipoNuevo) {
+        int posicion = listaEquipos.indexOf(equipoAnterior);
+        if (posicion < 0) {
+            return "No se encontro el equipo que desea actualizar.";
+        }
+        Optional<Equipo> repetido = buscarEquipo(equipoNuevo.getCodigoUnico());
+        if (repetido.isPresent() && repetido.get() != equipoAnterior) {
+            return "Ya existe otro equipo con ese codigo.";
+        }
+        equipoNuevo.setOwnedByCliente(this);
+        listaEquipos.set(posicion, equipoNuevo);
+        return "Equipo actualizado correctamente.";
     }
 
     public TechRepair getOwnedByTechRepair() {
@@ -82,12 +94,35 @@ public class Cliente {
                 ", nombreCompleto='" + nombreCompleto + '\'' +
                 ", correoElectronico='" + correoElectronico + '\'' +
                 ", direccionResidencia='" + direccionResidencia + '\'' +
-                ", listaEquipos=" + listaEquipos +
-                ", ownedByTechRepair=" + ownedByTechRepair +
                 '}';
     }
 
-    // CRUD Equipo
+    public String crearEquipo(Equipo equipo){
+        Optional<Equipo> optionalEquipo = buscarEquipo(equipo.getCodigoUnico());
+        if(optionalEquipo.isEmpty()){
+            listaEquipos.add(equipo);
+            return "Se creo el equipo de forma exitosa.";
+        }else{
+            return "No se puede crear el equipo pues ya existe uno con estos datos.";
+        }
+    }
 
+    public String eliminarEquipo(Equipo equipo){
+        Optional<Equipo> optionalEquipo = buscarEquipo(equipo.getCodigoUnico());
+        if(optionalEquipo.isEmpty()){
+            return "No existe un equipo con esos datos";
+        } else {
+            listaEquipos.remove(optionalEquipo.get());
+            return "Equipo eliminado con exito.";
+        }
+    }
 
+    public Optional<Equipo> buscarEquipo(String codigoUnico) {
+        for (Equipo equipo : listaEquipos) {
+            if (equipo.getCodigoUnico().equals(codigoUnico)) {
+                return Optional.of(equipo);
+            }
+        }
+        return Optional.empty();
+    }
 }
